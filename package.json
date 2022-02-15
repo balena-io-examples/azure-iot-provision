@@ -1,0 +1,31 @@
+{
+  "name": "azure-iot-provision",
+  "private": false,
+  "version": "0.0.1",
+  "description": "Azure Function to provision a balena device to IoT Hub",
+  "main": "index.js",
+  "dependencies": {
+    "azure-iothub": "^1.14.6",
+    "balena-sdk": "^16.11.2",
+    "shelljs": "^0.8.5"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/balena-io-examples/azure-iot-provision.git"
+  },
+  "keywords": [
+    "balena",
+    "balenaCloud",
+    "azure",
+    "iot"
+  ],
+  "author": "Ken Bannister <ken@balena.io>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/balena-io-examples/azure-iot-provision/issues"
+  },
+  "homepage": "https://github.com/balena-io-examples/azure-iot-provision#readme"
+}
