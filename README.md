@@ -5,7 +5,7 @@ This Azure Function allows you to provision and synchronize a balena device with
 
 | Command | Actions |
 |---------|---------|
-| POST | Provisions a balena device with Azure IoT. First the function verifies the device UUID with balenaCloud. ... |
+| POST | Provisions a balena device with Azure IoT. First the function verifies the device UUID with balenaCloud. Then it creates a public key certificate and registers the device with IoT Hub. Finally the function pushes the certificate and private key to balena device environment variables. |
 | DELETE | Removes a balena device from the IoT Hub and removes the balena device environment variable. Essentially reverses the actions from provisioning with POST. |
 
 ## Setup and Testing
