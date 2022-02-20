@@ -30,9 +30,6 @@ cp ../provision-repo/src/index.js provision \
 # copy testing and deployment scripts into workspace
 cp ../provision-repo/tools/*.sh . \
    && echo -e '*.sh\n*.pem' >.funcignore
-```
-
-**ToDo** Test `.funcignore` by looking at `clrelay-provision-app -> Functions -> App files`
 
 Finally, you must edit the `run-local-server.sh` and `create-func.sh` scripts copied above to provide these environment variables:
 
