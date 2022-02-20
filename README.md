@@ -49,15 +49,17 @@ After a successful POST, you should see the device appear in your IoT Hub regist
 ## Deploy
 To deploy to Azure Functions, you first must create a storage account and the function application in Azure itself. Edit `create-func.sh` to initialize all of the variables, and then run it.
 
-It may take a few minutes for the Function app to become available. Use the command below, using the name of the app from `create-func.sh`.
+It may take a few minutes for the Function app to become available. Use the command below, substituting the name of the app from `create-func.sh` for `xxxx`.
 
 ```
-$ func azure functionapp publish "<your-app-name>"
+$ func azure functionapp publish xxxx
 
 ...
-Functions in <your-app-name>:
+Functions in xxxx:
     provision - [httpTrigger]
-        Invoke url: https://iot-clrelay-func.azurewebsites.net/api/provision
+        Invoke url: https://xxxx.azurewebsites.net/api/provision
 ```
 
 To test the deployment, first edit `test-provision.sh` to use the `Invoke url` in the response to publising the app, and then run the script.
+
+After a successful POST, you should see the device appear in your IoT Hub registry and AZURE_CERT and AZURE_PRIVATE_KEY variables appear in balenaCloud for the device. After a successful DELETE, the device and those variables disappear.
