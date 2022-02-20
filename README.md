@@ -62,4 +62,4 @@ Functions in xxxx:
 
 To test the deployment, first edit `test-provision.sh` to use the `Invoke url` in the response to publising the app, and then run the script.
 
-After a successful POST, you should see the device appear in your IoT Hub registry and AZURE_CERT and AZURE_PRIVATE_KEY variables appear in balenaCloud for the device. After a successful DELETE, the device and those variables disappear.
+After a successful POST, you should see the device appear in your IoT Hub registry and `AZURE_CERT` and `AZURE_PRIVATE_KEY` variables appear in balenaCloud for the device. After a successful DELETE, the device and those variables disappear.
