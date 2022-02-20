@@ -5,11 +5,13 @@
 #
 #    $ test-provision.sh <POST|DELETE>
 #
-#    Use your values for variables of the form "<your-*>" in this file.
+#    Use your values for variables of the form '<your-*>'.
 
 BALENA_DEVICE_UUID=<your-device-UUID>
-# URL is for local server from run-local-server.sh
+# URL for local server from run-local-server.sh
 PROVISION_URL="http://localhost:7071/api/provision"
+# URL for Azure Function
+#PROVISION_URL=<your-azure-function-url>
 
-curl POST $PROVISION_URL -H "Content-Type:application/json" \
+curl $PROVISION_URL -H "Content-Type:application/json" \
    -d '{ "uuid": "'$BALENA_DEVICE_UUID'", "method": "'$1'" }' -v

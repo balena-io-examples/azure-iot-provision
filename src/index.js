@@ -31,12 +31,10 @@ module.exports = async function (context, req) {
         switch (method) {
             case 'POST':
                 console.log(`Creating device: ${body.uuid} ...`)
-                context.res = await handlePost(context, body.uuid)
-                break
+                return await handlePost(context, body.uuid)
             case 'DELETE':
                 console.log(`Deleting device: ${body.uuid} ...`)
-                context.res = await handleDelete(context, body.uuid)
-                break
+                return await handleDelete(context, body.uuid)
             default:
                 throw { code: 'provision.request.bad-method' }
         }
@@ -52,7 +50,7 @@ module.exports = async function (context, req) {
                 statusCode = 400
             }
         }
-        context.res = {
+        return {
             status: statusCode,
             body: error
         }
