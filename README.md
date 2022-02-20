@@ -30,6 +30,7 @@ cp ../provision-repo/src/index.js provision \
 # copy testing and deployment scripts into workspace
 cp ../provision-repo/tools/*.sh . \
    && echo -e '*.sh\n*.pem' >.funcignore
+```
 
 Finally, you must edit the `run-local-server.sh` and `create-func.sh` scripts copied above to provide these environment variables:
 
