@@ -27,6 +27,9 @@ az functionapp create --resource-group "$resource_group" --name "$app_name" \
    --runtime node --runtime-version 14 --functions-version 4 --os-type Linux
 
 echo "Adding function app variables..."
+# CLI reference says the '--settings' parameter should accept a space-separated list of
+# key=value pairs, but this does not work as of 2022-02.
+# https://docs.microsoft.com/en-us/cli/azure/functionapp/config/appsettings?view=azure-cli-latest
 az functionapp config appsettings set --name "$app_name" --resource-group "$resource_group" \
    --settings "RESIN_EMAIL=$resin_email"
 az functionapp config appsettings set --name "$app_name" --resource-group "$resource_group" \
