@@ -5,8 +5,8 @@
 # Use your values for variables of the form '<your-*>'.
 
 # environment variables required to run the function; see project README.md
-resin_email="<your-balena-email-name>"
-resin_password="<your-password-for-balena-email>"
+balena_email="<your-balena-email-name>"
+balena_password="<your-password-for-balena-email>"
 connection_string="<your-iot-hub-connection-string>"
 
 # for function app
@@ -31,8 +31,8 @@ echo "Adding function app variables..."
 # key=value pairs, but this does not work as of 2022-02.
 # https://docs.microsoft.com/en-us/cli/azure/functionapp/config/appsettings?view=azure-cli-latest
 az functionapp config appsettings set --name "$app_name" --resource-group "$resource_group" \
-   --settings "RESIN_EMAIL=$resin_email"
+   --settings "BALENA_EMAIL=$balena_email"
 az functionapp config appsettings set --name "$app_name" --resource-group "$resource_group" \
-   --settings "RESIN_PASSWORD=$resin_password"
+   --settings "BALENA_PASSWORD=$balena_password"
 az functionapp config appsettings set --name "$app_name" --resource-group "$resource_group" \
    --settings "CONNECTION_STRING=$connection_string"

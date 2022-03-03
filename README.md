@@ -36,8 +36,8 @@ Finally, you must edit the `run-local-server.sh` and `create-func.sh` scripts co
 
 |    Key      |    Value    |
 |-------------|-------------|
-| RESIN_EMAIL | for balena login |
-| RESIN_PASSWORD | for balena login |
+| BALENA_EMAIL | for balena login |
+| BALENA_PASSWORD | for balena login |
 | CONNECTION_STRING | for read/write access to IoT Hub; found in the Azure Portal at: `IoT Hub -> Shared access policies -> registryReadWrite -> Primary connection string` |
 
 ### Test locally
