@@ -14,10 +14,12 @@ let registry
 
 /**
  * Provides creation and deletion of Azure IoT Hub device, and updates balena environment
- * vars. Expects JSON formatted event like: { uuid: <device-uuid>, method: <POST|DELETE> }.
+ * vars. Expects JSON formatted event like: { uuid: <device-uuid>, method: <POST|DELETE>,
+ * balena_service: <service-name> }.
  */
 module.exports = async function (context, req) {
     try {
+        const badBodyCode = 'provision.request.bad-body'
         const creds = { email: process.env.BALENA_EMAIL, password: process.env.BALENA_PASSWORD }
         await balena.auth.login(creds)
 
@@ -28,27 +30,42 @@ module.exports = async function (context, req) {
         }
         const body = req.body;
         if (!body.uuid) {
-            throw { code: 'provision.request.no-uuid' }
+            throw { code: badBodyCode }
         }
-        await balena.models.device.get(body.uuid)
+        // lookup device; throws error if not found
+        const device = await balena.models.device.get(body.uuid)
 
+        // lookup service, if name provided
+        let service
+        if (body.balena_service) {
+            const allServices = await balena.models.service.getAllByApplication(device.belongs_to__application.__id)
+            for (service of allServices) {
+                //console.debug("service_name:", service.service_name)
+                if (service.service_name == body.balena_service) {
+                    break
+                }
+            }
+            if (!service) {
+                throw { code: badBodyCode }
+            }
+        }
 
         // provided in Azure portal at IoT Hub -> Shared access policies -> registryReadWrite
         const connectionString = process.env.CONNECTION_STRING
         registry = iothub.Registry.fromConnectionString(connectionString)
 
-        const method = body.method
         let resObj = null
-        switch (method) {
+        let deviceText = `${body.uuid} for service ${body.balena_service}`
+        switch (body.method) {
             case 'POST':
-                context.log(`Creating device: ${body.uuid} ...`)
-                resObj = await handlePost(context, body.uuid)
+                context.log(`Creating device: ${deviceText} ...`)
+                resObj = await handlePost(context, device, service)
                 context.res.status = resObj.status
                 context.res.body = resObj.body
                 break
             case 'DELETE':
-                context.log(`Deleting device: ${body.uuid} ...`)
-                resObj = await handleDelete(context, body.uuid)
+                context.log(`Deleting device: ${deviceText} ...`)
+                resObj = await handleDelete(context, device, service)
                 context.res.status = resObj.status
                 context.res.body = resObj.body
                 break
@@ -83,7 +100,17 @@ module.exports = async function (context, req) {
     }
 }
 
-async function handlePost(context, uuid) {
+/**
+ * Adds device to IoT Hub registry with new key pair and certificate, and sets
+ * balena environment vars.
+ *
+ * service: Service on the balena device for which variables are created. If service
+ * is undefined, creates device level environment variables.
+ *
+ * Returns a 400 response if thing already exists. Throws an error on failure to
+ * create the device.
+ */
+async function handlePost(context, device, service) {
     // Create self-signed cert by:
     //   1. generate private key
     //   2. create certificate signing request
@@ -93,7 +120,7 @@ async function handlePost(context, uuid) {
     let fingerprint, privateKey, cert
     try {
         const cmd = `openssl genpkey -out ${tmpdir}/device_private.pem -algorithm RSA -pkeyopt rsa_keygen_bits:2048 \
-         && openssl req -new -key ${tmpdir}/device_private.pem -out ${tmpdir}/device_csr.pem -subj "/CN=${uuid}" \
+         && openssl req -new -key ${tmpdir}/device_private.pem -out ${tmpdir}/device_csr.pem -subj "/CN=${device.uuid}" \
          && openssl x509 -req -in ${tmpdir}/device_csr.pem -signkey ${tmpdir}/device_private.pem -out ${tmpdir}/device_cert.pem -days 3650 \
          && openssl x509 -in ${tmpdir}/device_cert.pem -noout -fingerprint`
 
@@ -112,7 +139,7 @@ async function handlePost(context, uuid) {
 
     // Create a new device
     let deviceInfo = {
-        deviceId: uuid,
+        deviceId: device.uuid,
         authentication: {
             x509Thumbprint: {
                 primaryThumbprint: fingerprint,
@@ -124,8 +151,17 @@ async function handlePost(context, uuid) {
     const response = await registry.create(deviceInfo)
     context.log.verbose("device:", response.responseBody)
 
-    await balena.models.device.envVar.set(uuid, 'AZURE_PRIVATE_KEY', privateKey.toString('base64'))
-    await balena.models.device.envVar.set(uuid, 'AZURE_CERT', cert.toString('base64'))
+    if (service) {
+        await balena.models.device.serviceVar.set(device.id, service.id, 'AZURE_PRIVATE_KEY',
+                privateKey.toString('base64'))
+        await balena.models.device.serviceVar.set(device.id, service.id, 'AZURE_CERT',
+                cert.toString('base64'))
+    } else {
+        await balena.models.device.envVar.set(device.uuid, 'AZURE_PRIVATE_KEY',
+                privateKey.toString('base64'))
+        await balena.models.device.envVar.set(device.uuid, 'AZURE_CERT',
+                cert.toString('base64'))
+    }
 
     context.log("Created device")
     return {
@@ -134,9 +170,18 @@ async function handlePost(context, uuid) {
     }
 }
 
-async function handleDelete(context, uuid) {
+/**
+ * Removes device and certificate from IoT hub registry, and also removes balena
+ * environment vars. Cleans up resources as available; accommodates missing resources.
+ *
+ * service: Service on the balena device for which variables are removed. If service
+ * is undefined, removes device level environment variables.
+ * 
+ * Throws an error on failure to delete the device or certificate.
+ */
+async function handleDelete(context, device, service) {
     try {
-        await registry.delete(uuid)
+        await registry.delete(device.uuid)
     } catch (error) {
         if (!error.name || error.name != "DeviceNotFoundError") {
             throw error
@@ -145,8 +190,13 @@ async function handleDelete(context, uuid) {
         }
     }
 
-    await balena.models.device.envVar.remove(uuid, 'AZURE_CERT')
-    await balena.models.device.envVar.remove(uuid, 'AZURE_PRIVATE_KEY')
+    if (service) {
+        await balena.models.device.serviceVar.remove(device.uuid, service.id, 'AZURE_CERT')
+        await balena.models.device.serviceVar.remove(device.uuid, service.id, 'AZURE_PRIVATE_KEY')
+    } else {
+        await balena.models.device.envVar.remove(device.uuid, 'AZURE_CERT')
+        await balena.models.device.envVar.remove(device.uuid, 'AZURE_PRIVATE_KEY')
+    }
 
     context.log("Deleted device")
     return {
