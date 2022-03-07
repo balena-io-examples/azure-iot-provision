@@ -1,7 +1,7 @@
 # Microsoft Azure Function for IoT Device Provisioning
 This Azure Function allows you to provision and synchronize a balena device with Azure IoT in a secure and automated way via an HTTP endpoint. The Azure Function may be called by a balena device, as seen in the [cloud-relay](https://github.com/balena-io-examples/cloud-relay) example.
 
-| Command | Actions |
+| Method | Actions |
 |---------|---------|
 | POST | Provisions a balena device with Azure IoT. First the function verifies the device UUID with balenaCloud. Then it creates a public key certificate and registers the device with IoT Hub. Finally the function pushes the certificate and private key to balena device environment variables. |
 | DELETE | Removes a balena device from the IoT Hub and removes the balena device environment variable. Essentially reverses the actions from provisioning with POST. |
@@ -24,6 +24,7 @@ func init provision-func --javascript \
 
 # copy provisioning code into workspace
 cp ../provision-repo/src/index.js provision \
+   && cp ../provision-repo/src/function.json provision \
    && cp ../provision-repo/src/package* . \
    && npm install
 
@@ -31,8 +32,6 @@ cp ../provision-repo/src/index.js provision \
 cp ../provision-repo/tools/*.sh . \
    && echo -e '*.sh\n*.pem' >.funcignore
 ```
-
-You must edit `provision-func/provision/function.json`, which was created by the `func init` command above. Ensure the `methods` array attribute includes `delete` and `post`.
 
 Finally, you must edit the `run-local-server.sh` and `create-func.sh` scripts copied above to provide these environment variables:
 
@@ -48,7 +47,7 @@ The HTTP endpoint expects a request containing a JSON body with the attributes b
 | Attribute | Value |
 |-----------|-------|
 | uuid | UUID of device  |
-| balena_service | (optional) Name of service container on balena device. If defined, creates service level variables; otherwise creates device level variables. Service level variables are more secure. |
+| balena_service | (optional) Name of service container on balena device that uses provisioned key and certificate, for example `cloud-relay`. If defined, creates service level variables; otherwise creates device level variables. Service level variables are more secure. |
 
 ### Test locally
 Start the local server by running `run-local-server.sh`.
