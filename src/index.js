@@ -24,7 +24,7 @@ module.exports = async function (context, req) {
         await balena.auth.login(creds)
 
         // Validate device with balenaCloud
-        context.log('event:', JSON.stringify(req))
+        context.log.verbose('event:', JSON.stringify(req))
         if (!req || !req.body) {
             throw { code: 'provision.request.no-body' }
         }
@@ -56,7 +56,7 @@ module.exports = async function (context, req) {
 
         let resObj = null
         let deviceText = `${body.uuid} for service ${body.balena_service}`
-        switch (body.method) {
+        switch (req.method) {
             case 'POST':
                 context.log(`Creating device: ${deviceText} ...`)
                 resObj = await handlePost(context, device, service)

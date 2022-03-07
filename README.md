@@ -32,6 +32,8 @@ cp ../provision-repo/tools/*.sh . \
    && echo -e '*.sh\n*.pem' >.funcignore
 ```
 
+You must edit `provision-func/provision/function.json`, which was created by the `func init` command above. Ensure the `methods` array attribute includes `delete` and `post`.
+
 Finally, you must edit the `run-local-server.sh` and `create-func.sh` scripts copied above to provide these environment variables:
 
 |    Key      |    Value    |
@@ -41,12 +43,11 @@ Finally, you must edit the `run-local-server.sh` and `create-func.sh` scripts co
 | CONNECTION_STRING | for read/write access to IoT Hub; found in the Azure Portal at: `IoT Hub -> Shared access policies -> registryReadWrite -> Primary connection string` |
 
 ### HTTP API
-The HTTP endpoint expects a POST request containing a JSON body with these attributes:
+The HTTP endpoint expects a request containing a JSON body with the attributes below. Use POST to add a device to the cloud registry, DELETE to remove.
 
 | Attribute | Value |
 |-----------|-------|
 | uuid | UUID of device  |
-| method | "POST" to add device to cloud registry, "DELETE" to remove  |
 | balena_service | (optional) Name of service container on balena device. If defined, creates service level variables; otherwise creates device level variables. Service level variables are more secure. |
 
 ### Test locally

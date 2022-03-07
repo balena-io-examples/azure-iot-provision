@@ -14,5 +14,5 @@ PROVISION_URL="http://localhost:7071/api/provision"
 # URL for Azure function app
 #PROVISION_URL=<your-azure-function-url>
 
-curl $PROVISION_URL -H "Content-Type:application/json" \
-   -d '{ "balena_service": "'$BALENA_SERVICE_NAME'", "method": "'$1'", "uuid": "'$BALENA_DEVICE_UUID'" }' -v
+curl -X $1 $PROVISION_URL -H "Content-Type:application/json" \
+   -d '{ "uuid": "'$BALENA_DEVICE_UUID'", "balena_service": "'$BALENA_SERVICE_NAME'" }' -v
