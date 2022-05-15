@@ -23,9 +23,9 @@ func init provision-func --javascript \
    && func new --name provision --template "HTTP trigger" --authlevel "anonymous"
 
 # copy provisioning code into workspace
-cp ../provision-repo/src/index.js provision \
-   && cp ../provision-repo/src/function.json provision \
-   && cp ../provision-repo/src/package* . \
+cp ../provision-repo/index.js provision \
+   && cp ../provision-repo/function.json provision \
+   && cp ../provision-repo/package* . \
    && npm install
 
 # copy testing and deployment scripts into workspace
@@ -51,7 +51,7 @@ The HTTP endpoint expects a request containing a JSON body with the attributes b
 
 ### Test locally
 Start the local server by running `run-local-server.sh`.
-Edit `test-provision.sh` to set a valid device UUID for provisioning and balena service name, and then run the file to send the HTTP request.
+Edit `test-provision.sh` to set a valid device UUID for provisioning and balena service name, and then run the file with either a `POST` or `DELETE` parameter to send the HTTP request.
 
 After a successful POST, you should see the device appear in your IoT Hub registry, and `AZURE_CERT` and `AZURE_PRIVATE_KEY` variables appear in balenaCloud for the device and service. After a successful DELETE, the device and those variables disappear.
 
