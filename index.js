@@ -20,8 +20,7 @@ let registry
 module.exports = async function (context, req) {
     try {
         const badBodyCode = 'provision.request.bad-body'
-        const creds = { email: process.env.BALENA_EMAIL, password: process.env.BALENA_PASSWORD }
-        await balena.auth.login(creds)
+        await balena.auth.loginWithToken(process.env.BALENA_API_KEY)
 
         // Validate device with balenaCloud
         context.log.verbose('event:', JSON.stringify(req))

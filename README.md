@@ -37,8 +37,7 @@ Finally, you must edit the `run-local-server.sh` and `create-func.sh` scripts co
 
 |    Key      |    Value    |
 |-------------|-------------|
-| BALENA_EMAIL | for balena login |
-| BALENA_PASSWORD | for balena login |
+| BALENA_API_KEY | for use of balena API; found in balenaCloud dashboard at: `account -> Preferences -> Access tokens` |
 | CONNECTION_STRING | for read/write access to IoT Hub; found in the Azure Portal at: `IoT Hub -> Shared access policies -> registryReadWrite -> Primary connection string` |
 
 ### HTTP API
