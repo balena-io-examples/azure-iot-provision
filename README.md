@@ -15,10 +15,10 @@ Once the Azure function has provisioned the device with Azure, it sets balena de
 | AZURE_PRIVATE_KEY | Private key in PEM format, base64 encoded to eliminate line wrapping |
 
 ## Setup and Testing
-### Azure IoT setup
+### Azure setup
 The Azure Function interacts with Azure IoT via NodeJS code operating with read/write privileges on an IoT Hub. First you must setup an Azure IoT Hub with an associated Resource group. See the [CLI](https://docs.microsoft.com/en-us/azure/iot-develop/quickstart-send-telemetry-iot-hub?pivots=programming-language-nodejs#create-an-iot-hub) or [Portal](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-node-node-device-management-get-started#create-an-iot-hub) based instructions. Also see the IoT Hub [documentation](https://docs.microsoft.com/en-us/azure/iot-hub/) for background.
 
-### Development setup
+### Workspace setup
 To get started, you must set up a workspace to build the function. See the Azure Functions [JavaScript quickstart](https://docs.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-node) for background, and run these commands:
 
 ```
